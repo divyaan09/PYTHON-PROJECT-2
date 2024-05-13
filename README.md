@@ -1,2 +1,2 @@
-This is my second python project | 
+This is my Second Python Project Repo | 
 Author - Divyanshu
