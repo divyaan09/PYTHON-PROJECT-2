@@ -1,4 +1,7 @@
-# <<<------------------- FLIGHT RESERVATION SYSTEM --------------------->>>
+<<<------------------- FLIGHT RESERVATION SYSTEM ---------------------->>>
+
+import tkinter as tk
+from tkinter import messagebox
 
 NUM_SEATS = 10
 seats = [None] * NUM_SEATS
@@ -21,74 +24,81 @@ flights = [
     Flight("GHI789", "Chicago", "2024-04-20 12:00")
 ]
 
-def display_menu():
-    print("\nFlight Reservation System")
-    print("1. Book a Seat")
-    print("2. Cancel Reservation")
-    print("3. View Available Seats")
-    print("4. View Flights")
-    print("5. Exit")
-
-def get_passenger_info():
-    name = input("Enter passenger name: ")
-    age = input("Enter passenger age: ")
-    return name, age
-
 def book_seat():
-    seat_number = int(input(f"Enter seat number (1-{NUM_SEATS}): "))
-    if seat_number < 1 or seat_number > NUM_SEATS:
-        print("Invalid seat number.")
+    seat_number = seat_entry.get()
+    if not seat_number.isdigit() or not (1 <= int(seat_number) <= NUM_SEATS):
+        messagebox.showerror("Invalid Input", "Enter a valid seat number between 1 and 10.")
         return
 
+    seat_number = int(seat_number)
     if seats[seat_number - 1] is not None:
-        print(f"Seat {seat_number} is already booked.")
+        messagebox.showerror("Seat Taken", f"Seat {seat_number} is already booked.")
     else:
-        name, age = get_passenger_info()
+        name = name_entry.get()
+        age = age_entry.get()
+        if not name or not age:
+            messagebox.showerror("Invalid Input", "Please enter both name and age.")
+            return
+
         passenger = Passenger(name, age, seat_number)
         seats[seat_number - 1] = passenger
-        print(f"Seat {seat_number} booked successfully for {passenger.name}.")
+        messagebox.showinfo("Success", f"Seat {seat_number} booked successfully for {name}.")
 
-def cancel_reservation():
-    seat_number = int(input("Enter seat number to cancel reservation: "))
-    if seat_number < 1 or seat_number > NUM_SEATS:
-        print("Invalid seat number.")
+def cancel_seat():
+    seat_number = seat_entry.get()
+    if not seat_number.isdigit() or not (1 <= int(seat_number) <= NUM_SEATS):
+        messagebox.showerror("Invalid Input", "Enter a valid seat number between 1 and 10.")
         return
 
+    seat_number = int(seat_number)
     if seats[seat_number - 1] is None:
-        print(f"Seat {seat_number} is not booked.")
+        messagebox.showerror("Invalid Action", f"Seat {seat_number} is not booked.")
     else:
         seats[seat_number - 1] = None
-        print(f"Reservation for seat {seat_number} cancelled.")
+        messagebox.showinfo("Success", f"Reservation for seat {seat_number} cancelled.")
 
 def view_available_seats():
-    print("Available seats:")
-    for i, seat in enumerate(seats):
-        if seat is None:
-            print(f"Seat {i + 1}")
+    available_seats = [str(i + 1) for i, seat in enumerate(seats) if seat is None]
+    available_seats_str = ", ".join(available_seats) if available_seats else "No seats available."
+    messagebox.showinfo("Available Seats", f"Available seats: {available_seats_str}")
 
 def display_flights():
-    print("Available Flights:")
-    for flight in flights:
-        print(f"Flight Number: {flight.flight_number}, Destination: {flight.destination}, Departure Time: {flight.departure_time}")
+    flights_info = "\n".join([f"Flight Number: {f.flight_number}, Destination: {f.destination}, Departure Time: {f.departure_time}" for f in flights])
+    messagebox.showinfo("Flights", flights_info)
 
-def main():
-    while True:
-        display_menu()
-        choice = input("Enter your choice: ")
+root = tk.Tk()
+root.title("Flight Reservation System")
+root.geometry("400x400")
+root.configure(bg="#ADD8E6")
 
-        if choice == '1':
-            book_seat()
-        elif choice == '2':
-            cancel_reservation()
-        elif choice == '3':
-            view_available_seats()
-        elif choice == '4':
-            display_flights()
-        elif choice == '5':
-            print("Exiting program.")
-            break
-        else:
-            print("Invalid choice. Please try again.")
+title_label = tk.Label(root, text="Flight Reservation System", font=("Arial", 16), bg="#ADD8E6")
+title_label.pack(pady=10)
 
-if __name__ == "__main__":
-    main()
+name_label = tk.Label(root, text="Passenger Name:", font=("Arial", 12), bg="#ADD8E6")
+name_label.pack(pady=5)
+name_entry = tk.Entry(root, font=("Arial", 12))
+name_entry.pack(pady=5)
+
+age_label = tk.Label(root, text="Passenger Age:", font=("Arial", 12), bg="#ADD8E6")
+age_label.pack(pady=5)
+age_entry = tk.Entry(root, font=("Arial", 12))
+age_entry.pack(pady=5)
+
+seat_label = tk.Label(root, text="Seat Number (1-10):", font=("Arial", 12), bg="#ADD8E6")
+seat_label.pack(pady=5)
+seat_entry = tk.Entry(root, font=("Arial", 12))
+seat_entry.pack(pady=5)
+
+book_button = tk.Button(root, text="Book Seat", command=book_seat, font=("Arial", 12), bg="lightgreen")
+book_button.pack(pady=10)
+
+cancel_button = tk.Button(root, text="Cancel Reservation", command=cancel_seat, font=("Arial", 12), bg="lightcoral")
+cancel_button.pack(pady=10)
+
+view_seats_button = tk.Button(root, text="View Available Seats", command=view_available_seats, font=("Arial", 12), bg="lightblue")
+view_seats_button.pack(pady=10)
+
+view_flights_button = tk.Button(root, text="View Flights", command=display_flights, font=("Arial", 12), bg="lightyellow")
+view_flights_button.pack(pady=10)
+
+root.mainloop()
